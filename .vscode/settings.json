@@ -1,0 +1,12 @@
+{
+    "cSpell.words": [
+        "autoincrement",
+        "notnull",
+        "pgdialect",
+        "pgdriver",
+        "sqldb",
+        "sqlitedialect",
+        "sqliteshim",
+        "uptrace"
+    ]
+}
