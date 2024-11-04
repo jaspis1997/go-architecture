@@ -2,11 +2,6 @@ package playground
 
 import "github.com/gin-gonic/gin"
 
-type App interface {
-	GetUsers(ids []int64) ([]*User, error)
-	CreateUsers(users []*User) error
-}
-
 type Repository interface {
 	GetUsers(ids []int64) ([]*User, error)
 	CreateUsers(users []*User) error
