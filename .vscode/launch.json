@@ -11,6 +11,9 @@
             "mode": "auto",
             "cwd": "./",
             "program": "./cmd",
+            "buildFlags": [
+                "-trimpath",
+            ],
             "args": [],
             "env": {}
         }
