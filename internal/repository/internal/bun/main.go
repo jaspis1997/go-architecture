@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"playground/internal/repository"
-	"playground/internal/repository/internal/database"
+	"playground/internal/repository/database"
 
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
@@ -15,15 +15,7 @@ import (
 	"github.com/uptrace/bun/driver/sqliteshim"
 )
 
-type (
-	Database = repository.Database
-	Config   = repository.DatabaseConfig
-
-	PostgresConfig = database.PostgresConfig
-	SQLiteConfig   = database.SQLiteConfig
-)
-
-func New(config Config) (Database, error) {
+func New(config repository.DatabaseConfig) (repository.Database, error) {
 	return open(config)
 }
 
@@ -35,16 +27,16 @@ var (
 	ErrorUnsupportedConfig = errors.New("unsupported config")
 )
 
-func open(config Config) (Database, error) {
+func open(config repository.DatabaseConfig) (repository.Database, error) {
 	switch config := config.(type) {
 	case nil:
-		return open(PostgresConfig{})
-	case PostgresConfig:
+		return open(database.PostgresConfig{})
+	case database.PostgresConfig:
 		dsn := config.DSN()
 		sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
 		db := bun.NewDB(sqldb, pgdialect.New())
 		return db, nil
-	case SQLiteConfig:
+	case database.SQLiteConfig:
 		if config.Filename == "" {
 			return nil, fmt.Errorf(FormatErrorRequired, "config.Filename")
 		}
@@ -57,7 +49,7 @@ func open(config Config) (Database, error) {
 	return nil, ErrorUnsupportedConfig
 }
 
-func Migrate(db Database, targets []any) error {
+func Migrate(db repository.Database, targets []any) error {
 	ctx := context.Background()
 	tx, err := db.Begin()
 	if err != nil {

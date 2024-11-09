@@ -2,12 +2,12 @@ package main
 
 import (
 	"net/http"
-	"playground"
+	"playground/internal/web"
 	"playground/internal/web/handler"
 )
 
-func routes(e playground.Engine) playground.Engine {
-	e.GET("/", func(c playground.WebContext) {
+func routes(e web.Engine) web.Engine {
+	e.GET("/", func(c web.Context) {
 		c.Status(http.StatusOK)
 	})
 	e.GET(PathHealthCheck, handler.HealthCheck()...)
@@ -16,7 +16,7 @@ func routes(e playground.Engine) playground.Engine {
 	e.GET("/api/v1/user/:id", handler.GetUsers()...)
 	e.POST("/api/v1/user", handler.CreateUsers()...)
 
-	e.GET("/favicon", func(c playground.WebContext) {
+	e.GET("/favicon", func(c web.Context) {
 		c.File("../assets/favicon.png")
 	})
 

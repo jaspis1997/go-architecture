@@ -2,55 +2,53 @@ package repository
 
 import (
 	"context"
-	"errors"
-	"playground"
+	playground "playground/internal"
+	"playground/internal/entity"
+	"sync"
 )
 
-var (
-	ErrorUnsupportedRepository = errors.New("unsupported repository")
-)
+var waitGroup sync.WaitGroup
+
+// Done waits for all database operations to finish.
+func Done() {
+	waitGroup.Wait()
+}
 
 type Repository struct {
 	db Database
 }
 
-var migrateEntities []any
-
-func RegisterEntities(entities []any) {
-	migrateEntities = entities
-}
-
-var migrate func(db Database, targets []any) error
-
-func RegisterMigrate(f func(db Database, targets []any) error) {
-	migrate = f
-}
-
-func Migrate(repository playground.RepositoryConfig) error {
-	if migrate == nil {
-		return nil
-	}
-	repo, ok := repository.(*Repository)
+func New(config playground.RepositoryConfig) (playground.Repository, error) {
+	conf, ok := config.(Config)
 	if !ok {
-		return ErrorUnsupportedRepository
+		return nil, ErrorUnsupportedConfig
 	}
-	return migrate(repo.db, migrateEntities)
+	db, err := openDatabase(conf.Main)
+	if err != nil {
+		return nil, err
+	}
+	repo := &Repository{
+		db: db,
+	}
+	return repo, nil
 }
 
-func (r *Repository) GetUsers(ids []int64) ([]*playground.User, error) {
-	var users []*playground.User
+func (r *Repository) GetUsers(ids []int64) ([]*entity.User, error) {
+	waitGroup.Add(1)
+	defer waitGroup.Done()
+	var users []*entity.User
 	ctx := context.Background()
 	err := r.db.NewSelect().Model(&users).Where("id = ?", In(ids)).Scan(ctx)
 	return users, err
 }
 
-func (r *Repository) CreateUsers(entities []*playground.User) error {
+func (r *Repository) CreateUsers(entities []*entity.User) error {
+	waitGroup.Add(1)
+	defer waitGroup.Done()
 	ctx := context.Background()
 	users := make([]any, len(entities))
 	for i, entity := range entities {
-		f := NewUser
-		_ = f
-		users[i] = NewUser(entity)
+		users[i] = ConvertModel(entity)
 	}
 	return r.db.NewInsert().Model(&users).Scan(ctx)
 }

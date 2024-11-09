@@ -1,73 +1,64 @@
 package repository
 
 import (
-	"fmt"
-	"net/url"
+	playground "playground/internal"
+	"reflect"
+	"sync"
+
+	"github.com/uptrace/bun"
 )
 
-type PostgresConfig struct {
-	User     string
-	Password string
-	Host     string
-	Port     uint16
-	DB       string
-	SSLMode  bool
+type (
+	Database = *bun.DB
+)
+
+var (
+	once    sync.Once
+	models  map[string]any
+	migrate func(db Database, targets []any) error
+)
+
+var openDatabase func(DatabaseConfig) (Database, error)
+
+func RegisterDatabaseDriver(f func(DatabaseConfig) (Database, error)) {
+	openDatabase = f
 }
 
-func (config PostgresConfig) DSN() string {
-	const postgres = "postgres"
-	const defaultPort = 5432
-	userinfo := func() *url.Userinfo {
-		user := func() string {
-			if config.User == "" {
-				return postgres
-			}
-			return config.User
-		}
-		if config.Password == "" {
-			return url.User(user())
-		}
-		return url.UserPassword(user(), config.Password)
+func RegisterModels(model []any) {
+	once.Do(func() {
+		models = make(map[string]any)
+	})
+	for _, v := range model {
+		models[reflect.TypeOf(v).Elem().Name()] = v
 	}
-	host := func() string {
-		if config.Host == "" {
-			return postgres
-		}
-		return config.Host
-	}
-	db := func() string {
-		if config.DB == "" {
-			return postgres
-		}
-		return config.DB
-	}
-	query := func() string {
-		query := make(url.Values)
-		if !config.SSLMode {
-			query.Add("sslmode", "disable")
-		} else {
-			query.Add("sslmode", "require")
-		}
-		return query.Encode()
-	}
-	port := config.Port
-	if port == 0 {
-		port = defaultPort
-	}
-	url := url.URL{
-		Scheme:   postgres,
-		Host:     fmt.Sprintf("%s:%d", host(), port),
-		User:     userinfo(),
-		Path:     db(),
-		RawQuery: query(),
-	}
-	return url.String()
 }
 
-type SQLiteConfig struct {
-	Filename string
+func ConvertModel(entity any) any {
+	model := models[reflect.TypeOf(entity).Elem().Name()]
+	ConvertDatabaseEntity(model, entity)
+	return model
 }
 
-func (config SQLiteConfig) DSN() string {
-	return config.Filename
+func RegisterMigrate(f func(db Database, targets []any) error) {
+	migrate = f
+}
+
+func migrateModels() []any {
+	var m []any
+	for _, v := range models {
+		m = append(m, v)
+	}
+	return m
+}
+
+func Migrate(repository playground.RepositoryConfig) error {
+	if migrate == nil {
+		// TODO: define error migrate is nil
+		panic("TODO")
+	}
+	repo, ok := repository.(*Repository)
+	if !ok {
+		return ErrorUnsupportedRepository
+	}
+	return migrate(repo.db, migrateModels())
 }

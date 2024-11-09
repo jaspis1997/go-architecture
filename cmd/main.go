@@ -2,18 +2,18 @@ package main
 
 import (
 	"log"
-	"playground"
 	"playground/internal/app"
 	_ "playground/internal/init"
 	"playground/internal/repository"
-	_ "playground/internal/repository/init"
+	"playground/internal/repository/database"
+	"playground/internal/web"
 )
 
 func main() {
-	e := playground.NewWebEngine()
+	e := web.New()
 	{
 		config := repository.Config{
-			Main: repository.SQLiteConfig{
+			Main: database.SQLiteConfig{
 				Filename: "test.db",
 			},
 		}
@@ -31,5 +31,7 @@ func main() {
 		}
 	}
 	e = routes(e)
-	e.Run("", 8080, true)
+	if err := e.Run("localhost", 8080); err != nil {
+		log.Fatal(err)
+	}
 }

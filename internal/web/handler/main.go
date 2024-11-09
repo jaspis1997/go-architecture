@@ -2,28 +2,27 @@ package handler
 
 import (
 	"net/http"
-	"playground"
 	"playground/internal/app"
 	"playground/internal/web"
 )
 
 type (
-	Context = playground.WebContext
+	Context = web.Context
 )
 
 type DebugTokenStore int
 
-func (DebugTokenStore) IsActiveToken(token string) bool {
+func (DebugTokenStore) VerificationToken(token string) bool {
 	return token == "debug"
 }
 
-func HealthCheck() []playground.HandlerFunc {
-	return []playground.HandlerFunc{healthCheck}
+func HealthCheck() []web.HandlerFunc {
+	return []web.HandlerFunc{healthCheck}
 }
 
-func SystemVersion() []playground.HandlerFunc {
+func SystemVersion() []web.HandlerFunc {
 	store := DebugTokenStore(0)
-	return []playground.HandlerFunc{
+	return []web.HandlerFunc{
 		web.AuthorizationBearerToken(store),
 		web.RequestLimiter(),
 		systemVersion,

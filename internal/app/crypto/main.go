@@ -3,7 +3,6 @@ package crypto
 import (
 	"crypto/rand"
 	"encoding/base64"
-	"errors"
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/argon2"
@@ -70,14 +69,6 @@ func HashPassword(salt []byte, password string, opt Options) (string, error) {
 		return "", ErrorUnsupported
 	}
 }
-
-var (
-	ErrorUnsupported     = errors.New("unsupported encryption algorithm")
-	ErrorInvalidSalt     = errors.New("invalid salt")
-	ErrorInvalidPassword = errors.New("invalid password")
-
-	ErrorInvalidSaltLength = errors.New("invalid salt length")
-)
 
 func GenerateRandomSalt(length int) ([]byte, error) {
 	if length <= 0 {
