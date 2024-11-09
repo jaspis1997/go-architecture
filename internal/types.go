@@ -12,4 +12,5 @@ type Repository interface {
 type RepositoryConfig interface{}
 
 type TokenAuthorization interface {
+	VerificationToken(token string) bool
 }
