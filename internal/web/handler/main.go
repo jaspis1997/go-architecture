@@ -12,7 +12,7 @@ type (
 
 type DebugTokenStore int
 
-func (DebugTokenStore) IsActiveToken(token string) bool {
+func (DebugTokenStore) VerificationToken(token string) bool {
 	return token == "debug"
 }
 

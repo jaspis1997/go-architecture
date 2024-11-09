@@ -4,18 +4,16 @@ import (
 	"net/http"
 	"strings"
 
+	playground "playground/internal"
+
 	"golang.org/x/time/rate"
 )
 
-type TokenStore interface {
-	IsActiveToken(token string) bool
-}
-
-func AuthorizationBearerToken(store TokenStore) HandlerFunc {
+func AuthorizationBearerToken(store playground.TokenAuthorization) HandlerFunc {
 	return func(c Context) {
-		token := c.GetHeader("Authorization")
-		token = strings.TrimPrefix(token, "Bearer ")
-		if !store.IsActiveToken(token) {
+		token := c.GetHeader(HeaderAuthorization)
+		token = strings.TrimPrefix(token, PrefixAuthorizationToken)
+		if !store.VerificationToken(token) {
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
