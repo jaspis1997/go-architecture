@@ -1,0 +1,121 @@
+openapi: 3.0.0
+info:
+  title: User API
+  version: 1.0.0
+servers:
+  - url: http://example.com:8080
+    description: Production server
+paths:
+  /api/v1/user/{id}:
+    get:
+      summary: Retrieve user information by ID
+      description: >
+        Retrieve detailed information for a specific user based on the provided user ID.
+        **Rate Limit:** Maximum 100 requests per second.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier of the user
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          required: true
+          description: Bearer token for authorization
+          schema:
+            type: string
+            example: Bearer {token}
+      responses:
+        '200':
+          description: Successful retrieval of user information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  unique_id:
+                    type: string
+                    format: uuid
+                    example: "4a83a457-9909-11ef-9693-9c6b0047b420"
+                  name:
+                    type: string
+                    example: "charlie"
+                  email:
+                    type: string
+                    format: email
+                    example: "charlie@example.com"
+                  salt:
+                    type: string
+                    example: "He2b1d6XKmJS9bpEkwQoJpks35DGga0871Y0tuOaJpM="
+                  password:
+                    type: string
+                    example: "VZ/0umRERags7AcaQ3ETvdP3JHg4wtmJvHG289nG21s="
+        '401':
+          description: Unauthorized - invalid or missing Bearer token
+        '404':
+          description: User not found
+
+  /api/v1/user:
+    post:
+      summary: Create a new user
+      description: >
+        Create a new user with the provided name, email, and password.
+        **Rate Limit:** Maximum 100 requests per second.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "charlie"
+                email:
+                  type: string
+                  format: email
+                  example: "charlie@example.com"
+                password:
+                  type: string
+                  format: password
+                  example: "password"
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Bearer token for authorization
+          schema:
+            type: string
+            example: Bearer {token}
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  unique_id:
+                    type: string
+                    format: uuid
+                    example: "4a83a457-9909-11ef-9693-9c6b0047b420"
+                  name:
+                    type: string
+                    example: "charlie"
+                  email:
+                    type: string
+                    format: email
+                    example: "charlie@example.com"
+        '400':
+          description: Bad request - invalid input data
+        '401':
+          description: Unauthorized - invalid or missing Bearer token
+        '409':
+          description: Conflict - user with the same email already exists
