@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	playground "playground/internal"
 	"playground/internal/app"
 	"playground/internal/entity"
 	"playground/internal/web"
@@ -18,7 +19,7 @@ func GetUsers() []web.HandlerFunc {
 }
 
 func getUsers(c Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+	id, err := strconv.Atoi(c.Param(playground.KeyId))
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
