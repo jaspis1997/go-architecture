@@ -3,7 +3,7 @@ package repository
 import "reflect"
 
 const (
-	TagParent = "db"
+	TagParent = "model"
 
 	TagValueIgnored = "ignore"
 )
