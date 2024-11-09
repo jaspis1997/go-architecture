@@ -2,7 +2,7 @@ package repository
 
 import (
 	"errors"
-	"playground"
+	playground "playground/internal"
 
 	"github.com/uptrace/bun"
 )
@@ -15,10 +15,10 @@ type (
 	Database = *bun.DB
 )
 
-var newDatabase func(DatabaseConfig) (Database, error)
+var openDatabase func(DatabaseConfig) (Database, error)
 
-func Register(f func(DatabaseConfig) (Database, error)) {
-	newDatabase = f
+func RegisterDatabaseDriver(f func(DatabaseConfig) (Database, error)) {
+	openDatabase = f
 }
 
 func New(config playground.RepositoryConfig) (playground.Repository, error) {
@@ -26,7 +26,7 @@ func New(config playground.RepositoryConfig) (playground.Repository, error) {
 	if !ok {
 		return nil, ErrorUnsupportedConfig
 	}
-	db, err := newDatabase(conf.Main)
+	db, err := openDatabase(conf.Main)
 	if err != nil {
 		return nil, err
 	}

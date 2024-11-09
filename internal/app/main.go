@@ -2,7 +2,7 @@ package app
 
 import (
 	"net/http"
-	"playground"
+	"playground/internal/entity"
 )
 
 var (
@@ -22,10 +22,10 @@ var (
 	encodePassword       func(salt []byte, password string) (string, error)
 )
 
-func GetUsers(ids []int64) ([]*playground.User, error) {
+func GetUsers(ids []int64) ([]*entity.User, error) {
 	return app.GetUsers(ids)
 }
 
-func CreateUsers(users []*playground.User) error {
+func CreateUsers(users []*entity.User) error {
 	return app.CreateUsers(users)
 }

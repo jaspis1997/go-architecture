@@ -6,9 +6,9 @@ import (
 )
 
 func init() {
-	repository.Register(bun.New)
+	repository.RegisterDatabaseDriver(bun.New)
 	repository.RegisterMigrate(bun.Migrate)
-	repository.RegisterEntities(bun.MigrateEntities())
+	repository.RegisterModels(bun.MigrateEntities())
 
-	repository.NewUser = bun.NewUser
+	// repository.NewUser = bun.NewUser
 }

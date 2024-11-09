@@ -1,8 +1,8 @@
 package bun
 
 import (
-	"playground"
-	"playground/internal/repository/internal/database"
+	"playground/internal/entity"
+	"playground/internal/repository"
 
 	"github.com/uptrace/bun"
 )
@@ -24,14 +24,14 @@ type User struct {
 	Password string `bun:"password"`
 }
 
-func NewUser(entity *playground.User) any {
+func NewUser(entity *entity.User) any {
 	user := &User{}
-	_ = database.ConvertDatabaseEntity(user, entity)
+	_ = repository.ConvertDatabaseEntity(user, entity)
 	return user
 }
 
-func (u *User) Entity() *playground.User {
-	entity := &playground.User{}
-	database.ConvertDatabaseEntity(u, entity)
+func (u *User) Entity() *entity.User {
+	entity := &entity.User{}
+	repository.ConvertDatabaseEntity(u, entity)
 	return entity
 }

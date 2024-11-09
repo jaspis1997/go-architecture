@@ -1,8 +1,9 @@
 package app
 
 import (
-	"playground"
+	playground "playground/internal"
 	"playground/internal/app/crypto"
+	"playground/internal/entity"
 )
 
 type application struct {
@@ -13,11 +14,11 @@ type users struct {
 	Repo playground.Repository
 }
 
-func (u *users) GetUsers(ids []int64) ([]*playground.User, error) {
+func (u *users) GetUsers(ids []int64) ([]*entity.User, error) {
 	return u.Repo.GetUsers(ids)
 }
 
-func (u *users) CreateUsers(users []*playground.User) error {
+func (u *users) CreateUsers(users []*entity.User) error {
 	if len(users) == 0 {
 		return ErrorEmptyUsers
 	}

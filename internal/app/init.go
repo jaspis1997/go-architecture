@@ -1,7 +1,7 @@
 package app
 
 import (
-	"playground"
+	playground "playground/internal"
 	"playground/internal/app/crypto"
 	"sync"
 )

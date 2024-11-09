@@ -2,15 +2,15 @@ package handler
 
 import (
 	"net/http"
-	"playground"
 	"playground/internal/app"
+	"playground/internal/entity"
 	"playground/internal/web"
 	"strconv"
 )
 
-func GetUsers() []playground.HandlerFunc {
+func GetUsers() []web.HandlerFunc {
 	store := DebugTokenStore(0)
-	return []playground.HandlerFunc{
+	return []web.HandlerFunc{
 		web.AuthorizationBearerToken(store),
 		web.RequestLimiter(),
 		getUsers,
@@ -35,9 +35,9 @@ func getUsers(c Context) {
 	c.JSON(http.StatusOK, users[0])
 }
 
-func CreateUsers() []playground.HandlerFunc {
+func CreateUsers() []web.HandlerFunc {
 	store := DebugTokenStore(0)
-	return []playground.HandlerFunc{
+	return []web.HandlerFunc{
 		web.AuthorizationBearerToken(store),
 		web.RequestLimiter(),
 		createUsers,
@@ -45,9 +45,9 @@ func CreateUsers() []playground.HandlerFunc {
 }
 
 func createUsers(c Context) {
-	var user playground.User
+	var user entity.User
 	c.Bind(&user)
-	err := app.CreateUsers([]*playground.User{&user})
+	err := app.CreateUsers([]*entity.User{&user})
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
