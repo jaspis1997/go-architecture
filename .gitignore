@@ -1,0 +1,4 @@
+.vscode/*
+!.vscode/cspell.json
+!.vscode/extensions.json
+!.vscode/launch.json
