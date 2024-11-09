@@ -31,5 +31,7 @@ func main() {
 		}
 	}
 	e = routes(e)
-	e.Run("localhost", 8080)
+	if err := e.Run("localhost", 8080); err != nil {
+		log.Fatal(err)
+	}
 }
