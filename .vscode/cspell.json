@@ -1,0 +1,16 @@
+{
+    "words": [
+        "autoincrement",
+        "Debugf",
+        "gonic",
+        "Infof",
+        "notnull",
+        "pgdialect",
+        "pgdriver",
+        "sqldb",
+        "sqlitedialect",
+        "sqliteshim",
+        "uptrace",
+        "Warnf"
+    ]
+}
