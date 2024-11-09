@@ -2,61 +2,27 @@ package repository
 
 import (
 	"context"
-	"errors"
 	playground "playground/internal"
 	"playground/internal/entity"
-	"reflect"
-	"sync"
-)
-
-var (
-	ErrorUnsupportedRepository = errors.New("unsupported repository")
 )
 
 type Repository struct {
 	db Database
 }
 
-var (
-	once    sync.Once
-	models  map[string]any
-	migrate func(db Database, targets []any) error
-)
-
-func migrateModels() []any {
-	var models []any
-	return models
-}
-
-func RegisterModels(model []any) {
-	once.Do(func() {
-		models = make(map[string]any)
-	})
-	for _, v := range model {
-		models[reflect.TypeOf(v).Elem().Name()] = v
-	}
-}
-
-func ConvertModel(entity any) any {
-	model := models[reflect.TypeOf(entity).Elem().Name()]
-	ConvertDatabaseEntity(model, entity)
-	return model
-}
-
-func RegisterMigrate(f func(db Database, targets []any) error) {
-	migrate = f
-}
-
-func Migrate(repository playground.RepositoryConfig) error {
-	if migrate == nil {
-		// TODO: define error migrate is nil
-		panic("TODO")
-	}
-	repo, ok := repository.(*Repository)
+func New(config playground.RepositoryConfig) (playground.Repository, error) {
+	conf, ok := config.(Config)
 	if !ok {
-		return ErrorUnsupportedRepository
+		return nil, ErrorUnsupportedConfig
 	}
-	return migrate(repo.db, migrateModels())
+	db, err := openDatabase(conf.Main)
+	if err != nil {
+		return nil, err
+	}
+	repo := &Repository{
+		db: db,
+	}
+	return repo, nil
 }
 
 func (r *Repository) GetUsers(ids []int64) ([]*entity.User, error) {
