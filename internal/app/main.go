@@ -2,6 +2,7 @@ package app
 
 import (
 	"net/http"
+	"playground/internal"
 	"playground/internal/entity"
 )
 
@@ -14,7 +15,7 @@ func HealthCheck() int {
 }
 
 func Version() string {
-	return "1.0.0-alpha"
+	return internal.Version()
 }
 
 var (
